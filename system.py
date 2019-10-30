@@ -1,5 +1,6 @@
 import disk as dk
 import event as ev
+import numpy as np
 import heapq
 
 class System:
@@ -13,7 +14,8 @@ class System:
     """
 
     def __init__(self, time, disks):
-        self.time = time
+        self.TIME_MAX = time
+        self.time_sim = 0
         self.minpq = [] #heapq
         self.events = [] #lista con los eventos posibles
         self.particles = disks #Lista de discos
@@ -38,7 +40,27 @@ class System:
     def build_binary_heap(self):
         for evento in self.events:
             evn = ev.Event(evento[0], evento[1])
-            tim = evn.calculate_time()
-            if tim != -1:
-                self.minpq.append(tim)
-        heapq.heapify(self.minpq)
+            evn.calculate_time()
+            if evn.time != np.inf:
+                heapq.heappush(self.minpq, evn)
+
+    # def main_loop(self):
+    #     while len(self.minpq) != 0 or self.time_sim >= self.TIME_MAX:
+    #         evn = heapq.heappop(self.minpq)
+    #             if evn.time > self.time_sim:
+    #                 for disk in self.particles:
+    #                     disk.move(evn.time)
+    #                 if evn.disk_a != None and evn.disk_b != None:
+
+
+
+if __name__ == "__main__":
+    ball = dk.Disk("pelotita", 5, 5, 10, 0, 1, 0.5, (255, 0 ,0))
+    ball2 = dk.Disk("pelotita 2", 10, 5, -5, 0, 1, 0.5, (0, 255, 0))
+    ball3 = dk.Disk("pelotita 3", 1, 3, 5, 2, 1, 0.5, (0, 0, 255))
+    sistema = System(100, [ball, ball2, ball3])
+    sistema.create_events(sistema.particles, [])
+    sistema.build_binary_heap()
+    print(sistema.minpq)
+    for evento in sistema.minpq:
+        print(evento)

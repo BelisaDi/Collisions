@@ -32,3 +32,7 @@ class Disk:
 
     def set_state(self, x, y, vx, vy):
         self.x, self.y, self.vx, self.vy = x, y, vx, vy
+
+    def move(self, deltat):
+        self.x = self.x + self.vx*deltat
+        self.y = self.y + self.vy*deltat 
