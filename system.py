@@ -79,12 +79,7 @@ class System:
                     evn.disk_b.vy = (-(ci)/(evn.disk_a.RADIUS + evn.disk_b.RADIUS)**2)*Vji_Rji*Rji[1] + evn.disk_b.vy
                     evn.disk_a.disk_colls += 1
                     evn.disk_b.disk_colls += 1
-
-                    print("La velocidad de " + evn.disk_a.TAG + " en el eje X es ", evn.disk_a.vx)
-                    print("La velocidad de " + evn.disk_a.TAG + " en el eje Y es ", evn.disk_a.vy)
-                    print("La velocidad de " + evn.disk_b.TAG + " en el eje X es ", evn.disk_b.vx)
-                    print("La velocidad de " + evn.disk_b.TAG + " en el eje Y es ", evn.disk_b.vy)
-
+                    
                     for otro_evento in self.minpq:
                         if otro_evento.disk_a == evn.disk_a or otro_evento.disk_b == evn.disk_a or otro_evento.disk_a == evn.disk_b or otro_evento.disk_b == evn.disk_b:
                             self.minpq.remove(otro_evento)
