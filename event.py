@@ -18,6 +18,12 @@ class Event:
         self.time = np.inf
         self.disk_a = disk_a
         self.disk_b = disk_b
+        if disk_a != None and disk_b != None:
+            self.TOTAL_COLLS = disk_a.disk_colls + disk_a.wall_colls + disk_b.disk_colls + disk_b.wall_colls
+        elif disk_a == None and disk_b != None:
+            self.TOTAL_COLLS = disk_b.disk_colls + disk_b.wall_colls
+        else:
+            self.TOTAL_COLLS = disk_a.disk_colls + disk_a.wall_colls 
 
     def calculate_time(self):
 
@@ -67,19 +73,12 @@ class Event:
     def __str__(self):
         strng = "Evento entre: "
         if self.disk_a != None and self.disk_b != None:
-            strng += self.disk_a.TAG
-            strng += " y "
-            strng += self.disk_b.TAG
+            strng += self.disk_a.TAG + " y " + self.disk_b.TAG
         elif self.disk_a == None and self.disk_b != None:
-            strng += self.disk_b.TAG
-            strng += " y "
-            strng += "muro vertical"
+            strng += self.disk_b.TAG + " y muro vertical."
         else:
-            strng += self.disk_a.TAG
-            strng += " y "
-            strng += "muro horizontal"
-        strng += ", con tiempo: "
-        strng += str(self.time)
+            strng += self.disk_a.TAG + " y muro horizontal."
+        strng += ", con tiempo: " + str(self.time) + " y colisiones totales: " + str(self.TOTAL_COLLS)
         return strng
 
 if __name__ == "__main__":
