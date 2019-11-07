@@ -85,39 +85,27 @@ class Animator:
         Finally, the time_template is defined and the text that will
         print the current time is set.
         """
-        xtremes = [(min(x), min(y), max(x), max(y)) for x, y in self.artists]
-        xmin = min(map(lambda lst: lst[0], xtremes)) + xmin_off
-        ymin = min(map(lambda lst: lst[1], xtremes)) + ymin_off
-        xmax = max(map(lambda lst: lst[2], xtremes)) + xmax_off
-        ymax = max(map(lambda lst: lst[3], xtremes)) + ymax_off
+        xmin = 0
+        ymin = 0
+        xmax = 10
+        ymax = 10
         print("Xtremes:", xmin, xmax, ymin, ymax)
 
         self.fig = plt.figure()
         self.ax = plt.axes(xlim=(xmin, xmax), ylim=(ymin, ymax),
                            autoscale_on=False)
         self.ax.set_facecolor('k')
-        self.ax.set(xlabel='x [a.u.]', ylabel='y [a.u.]',
-                    title='Projectile motion')
+        self.ax.set(xlabel='x', ylabel='y',
+                    title='Intento 1')
         self.ax.set_aspect('equal')
         self.ax.grid()
-
-        for a in range(self.art_num):
-            ln, = self.ax.plot([], [], '--')
-            ln.set_clip_on(False)
-            self.lines.append(ln)
 
         plt.gca().set_prop_cycle(None)
 
         for a in range(self.art_num):
-            pt, = self.ax.plot([], [], 'o')
+            pt, = self.ax.plot([], [], 'o', markersize = 25)
             pt.set_clip_on(False)
             self.points.append(pt)
-
-        self.time_template = 'time = %d a.u.'
-        self.time_text = self.ax.text(.5, .5, '', color='c',
-                                      transform=self.ax.transAxes,
-                                      horizontalalignment='center',
-                                      verticalalignment='center')
 
     def init_anime(self):
         """Initialize animation, used to draw a clear frame.
@@ -126,10 +114,8 @@ class Animator:
         matplotlib.animation.FuncAnimation.
         """
         for a in range(self.art_num):
-            self.lines[a].set_data([], [])
             self.points[a].set_data([], [])
-        self.time_text.set_text('')
-        return self.lines + self.points + [self.time_text]
+        return self.points
 
     def animate(self, idx):
         """Initialize animation, used to draw a clear frame.
@@ -142,11 +128,8 @@ class Animator:
         for a in range(self.art_num):
             if idx < len(self.artists[a][0]):
                 xc, yc = self.artists[a][0][idx], self.artists[a][1][idx]
-                self.lines[a].set_data(self.artists[a][0][:idx],
-                                       self.artists[a][1][:idx])
                 self.points[a].set_data(xc, yc)
-        self.time_text.set_text(self.time_template % idx)
-        return self.lines + self.points + [self.time_text]
+        return self.points
 
     def run_anime(self, inval=10, rep=True, blitit=False):
         """Invoke matplotlib.animation.FuncAnimation and display animation.
@@ -183,9 +166,7 @@ class Animator:
 
 
 if __name__ == "__main__":
-    anime = Animator((([0, 2, 4, 6], [-5, 0, 5, 10]),
-                      ([0, 1, 2, 3], [0, -1, -2, -3]),
-                      ([1, 2, 3, 4], [2, 4, 6, 8]),
-                      ([2, 3, 4, 5], [4, 9, 16, 25])))
+    anime = Animator((([5,9.5,5.92,0.5,9.5], [5,7.5,9.5,6.47,1.45]),))
+    #anime = Animator((([2],[2]),))
     anime.setup_anime()
-    anime.run_anime(inval=1000, rep=True)
+    anime.run_anime(inval=1000, rep=False)

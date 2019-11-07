@@ -24,7 +24,7 @@ class Event:
         elif disk_a == None and disk_b != None:
             self.TOTAL_COLLS = disk_b.disk_colls + disk_b.wall_colls
         else:
-            self.TOTAL_COLLS = disk_a.disk_colls + disk_a.wall_colls 
+            self.TOTAL_COLLS = disk_a.disk_colls + disk_a.wall_colls
         self.valid = False
 
     def calculate_time(self):
@@ -77,9 +77,9 @@ class Event:
         if self.disk_a != None and self.disk_b != None:
             strng += self.disk_a.TAG + " y " + self.disk_b.TAG
         elif self.disk_a == None and self.disk_b != None:
-            strng += self.disk_b.TAG + " y muro vertical."
+            strng += self.disk_b.TAG + " y muro vertical"
         else:
-            strng += self.disk_a.TAG + " y muro horizontal."
+            strng += self.disk_a.TAG + " y muro horizontal"
         strng += ", con tiempo: " + str(self.time) + " y colisiones totales: " + str(self.TOTAL_COLLS)
         return strng
 

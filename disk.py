@@ -25,11 +25,11 @@ class Disk:
         return strng
 
     def get_state(self):
-        return self.x, self.y, self.vx, self.vy, self.color
+        return self.x, self.y
 
     def set_state(self, x, y, vx, vy):
         self.x, self.y, self.vx, self.vy = x, y, vx, vy
 
     def move(self, deltat):
         self.x = self.x + self.vx*deltat
-        self.y = self.y + self.vy*deltat 
+        self.y = self.y + self.vy*deltat
