@@ -1,8 +1,5 @@
 import numpy as np
 
-LX = 10
-LY = 10
-
 class Disk:
 
     """

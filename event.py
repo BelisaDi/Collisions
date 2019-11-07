@@ -1,4 +1,5 @@
 import disk as dk
+import system as sy
 import numpy as np
 import heapq
 
@@ -24,6 +25,7 @@ class Event:
             self.TOTAL_COLLS = disk_b.disk_colls + disk_b.wall_colls
         else:
             self.TOTAL_COLLS = disk_a.disk_colls + disk_a.wall_colls 
+        self.valid = False
 
     def calculate_time(self):
 
@@ -50,7 +52,7 @@ class Event:
                 self.time = (self.disk_b.RADIUS - self.disk_b.x)/(self.disk_b.vx)
                 return self.time
             elif self.disk_b.vx > 0:
-                self.time = (dk.LX - self.disk_b.RADIUS - self.disk_b.x)/(self.disk_b.vx)
+                self.time = (sy.LX - self.disk_b.RADIUS - self.disk_b.x)/(self.disk_b.vx)
                 return self.time
             else:
                 self.time = np.inf
@@ -61,7 +63,7 @@ class Event:
                 self.time = (self.disk_a.RADIUS - self.disk_a.y)/(self.disk_a.vy)
                 return self.time
             elif self.disk_a.vy > 0:
-                self.time = (dk.LY - self.disk_a.RADIUS - self.disk_a.y)/(self.disk_a.vy)
+                self.time = (sy.LY - self.disk_a.RADIUS - self.disk_a.y)/(self.disk_a.vy)
                 return self.time
             else:
                 self.time = np.inf
