@@ -83,6 +83,18 @@ class Event:
         strng += ", con tiempo: " + str(self.time) + " y colisiones totales: " + str(self.TOTAL_COLLS)
         return strng
 
+    def ovnis_involved(self):
+        if self.disk_a != None and self.disk_b != None:
+            print("DISCO 1: ")
+            print(self.disk_a)
+            print("DISCO 2: ")
+            print(self.disk_b)
+        elif self.disk_a == None and self.disk_b != None:
+            print(self.disk_b)
+        else:
+            print(self.disk_a)
+
+
 if __name__ == "__main__":
     ball = dk.Disk("pelotita", 5, 5, 10, 0, 1, 0.5, (255, 0 ,0))
     ball2 = dk.Disk("pelotita 2", 10, 5, -5, 0, 1, 0.5, (0, 255, 0))
