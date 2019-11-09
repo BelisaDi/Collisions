@@ -67,7 +67,7 @@ class Animator:
         self.lines, self.points = [], []
         self.time_template = self.time_text = None
 
-    def setup_anime(self, xmin_off=0, ymin_off=0, xmax_off=0, ymax_off=0):
+    def setup_anime(self, xmax_c, ymax_c, tam):
         """Set up the animation.
 
         xmin_off - offset for the xmin limit calculated below.
@@ -87,8 +87,8 @@ class Animator:
         """
         xmin = 0
         ymin = 0
-        xmax = 10
-        ymax = 10
+        xmax = xmax_c
+        ymax = ymax_c
 
         self.fig = plt.figure()
         self.ax = plt.axes(xlim=(xmin, xmax), ylim=(ymin, ymax),
@@ -102,7 +102,7 @@ class Animator:
         plt.gca().set_prop_cycle(None)
 
         for a in range(self.art_num):
-            pt, = self.ax.plot([], [], 'o', markersize = 25)
+            pt, = self.ax.plot([], [], 'o', markersize = tam)
             pt.set_clip_on(False)
             self.points.append(pt)
 
@@ -165,7 +165,7 @@ class Animator:
 
 
 if __name__ == "__main__":
-    anime = Animator((([5,9.5,5.92,0.5,9.5], [5,7.5,9.5,6.47,1.45]),))
-    #anime = Animator((([2],[2]),))
-    anime.setup_anime()
+    #anime = Animator((([5,9.5,5.92,0.5,9.5], [5,7.5,9.5,6.47,1.45]),))
+    anime = Animator((([1],[1]),))
+    anime.setup_anime(10, 10, 50)
     anime.run_anime(inval=1000, rep=False)

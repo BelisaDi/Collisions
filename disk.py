@@ -1,12 +1,10 @@
-import numpy as np
-
 class Disk:
 
     """
     Clase que representa un disco impenetrable.
     """
 
-    def __init__(self, tag, x0, y0, v0x, v0y, mass, radius, color):
+    def __init__(self, tag, x0, y0, v0x, v0y, mass = 1, radius = 0.5, color = (255,0,0)):
         self.TAG = tag
         self.COLOR = color
         self.MASS = mass
@@ -26,9 +24,6 @@ class Disk:
 
     def get_state(self):
         return self.x, self.y
-
-    def set_state(self, x, y, vx, vy):
-        self.x, self.y, self.vx, self.vy = x, y, vx, vy
 
     def move(self, deltat):
         self.x = self.x + self.vx*deltat

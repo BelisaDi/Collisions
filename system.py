@@ -3,6 +3,7 @@ import event as ev
 import numpy as np
 import animator
 import heapq
+import random
 
 LX = 10
 LY = 10
@@ -52,32 +53,22 @@ class System:
                 heapq.heappush(self.minpq, evn)
 
     def valid(self, evn):
-        print("\n")
-        print("Vamos a revisar el evento...")
+
         if evn.disk_a != None and evn.disk_b != None:
-            print("Son dos discos!")
-            print("Colisiones reales: ", evn.disk_a.disk_colls + evn.disk_a.wall_colls + evn.disk_b.disk_colls + evn.disk_b.wall_colls)
             if evn.TOTAL_COLLS == evn.disk_a.disk_colls + evn.disk_a.wall_colls + evn.disk_b.disk_colls + evn.disk_b.wall_colls:
                 evn.valid = True
-                print("Es valido!")
             else:
-                print("No es valido!")
+                evn.valid = False
         elif evn.disk_a == None and evn.disk_b != None:
-            print("Es un disco con un muro vertical!")
-            print("Colisiones reales: ", evn.disk_b.disk_colls + evn.disk_b.wall_colls)
             if evn.TOTAL_COLLS == evn.disk_b.disk_colls + evn.disk_b.wall_colls:
                 evn.valid = True
-                print("Es valido!")
             else:
-                print("No es valido!")
+                evn.valid = False
         else:
-            print("Es un disco con un muro horizontal!")
-            print("Colisiones reales: ", evn.disk_a.disk_colls + evn.disk_a.wall_colls)
             if evn.TOTAL_COLLS == evn.disk_a.disk_colls + evn.disk_a.wall_colls:
                 evn.valid = True
-                print("Es valido!")
             else:
-                print("No es valido!")
+                evn.valif = False
 
     def res_collision(self, evn):
         if evn.disk_a != None and evn.disk_b != None: #DISCO CON DISCO
@@ -212,55 +203,55 @@ class System:
                 break
             if self.time_sim >= self.TIME_MAX:
                 break
-            print("BINARY HEAP: ")
-            for evento in self.minpq:
-                print(evento)
-            print("\n")
             evn = heapq.heappop(self.minpq)
-            print("PRIMER EVENTO DE LA COLA: ")
-            print(evn)
             self.valid(evn)
-            print("\n")
             if evn.time > self.time_sim and evn.valid:
-                print("SUCEDIÓ ESTE EVENTO: ")
-                print("OJO, LA SIMULACIÓN VA EN: ", self.time_sim)
-                print(evn)
-                print("\n")
-
-                print("POSICIONES ANTES: ")
-                for disk in self.particles:
-                    print(disk)
-
                 self.move_particles(evn.time - self.time_sim)
-                print("MOVÍ LAS PARTICULAS UN DELTA DE: ", evn.time - self.time_sim, "\n")
-
                 self.time_sim = evn.time
                 self.res_collision(evn)
-
-                print("POSICIONES DESPUÉS: ")
-                for disk in self.particles:
-                    print(disk)
-                print("\n")
-
                 self.new_colls(evn)
                 self.fill_list()
 
-                print("AHORA LA SIMULACIÓN VA EN: ", self.time_sim)
-                print("----------------------------------------\n")
-
-
 if __name__ == "__main__":
-    ball = dk.Disk("pelotita", 5, 5, 0.125, 5.127, 1, 0.5, (255, 0 ,0))
-    ball2 = dk.Disk("pelotita 2", 1, 2, -2.406, -3.4549, 1, 0.5, (255, 0, 0))
-    ball3 = dk.Disk("pelotita 3", 7, 8, 2.6755, 3.6581, 1, 0.5, (255, 0, 0))
-    sistema = System(10, [ball, ball2, ball3])
-    sistema.create_events(sistema.particles, [])
-    sistema.build_binary_heap()
-    sistema.main_loop()
-    i = 0
-    while i < len(sistema.lista_grande):
-        sistema.lista_grande[i] = tuple(sistema.lista_grande[i])
-        i += 1
-    anime = animator.Animator(sistema.lista_grande)
-    anime.setup_anime()
-    anime.run_anime(inval = 1000, rep = True)
+
+    def create_disks(n, sigma):
+        list = []
+        for i in range(n):
+            x = random.uniform(sigma, LX - sigma)
+            y = random.uniform(sigma, LY - sigma)
+            vx = random.uniform(-5, 5)
+            vy = random.uniform(-5, 5)
+            list.append(dk.Disk(str(i), x, y, vx, vy))
+        return list
+
+    def check_overlap(list):
+        for disco in list:
+            aux = [x for x in list if x != disco]
+            for disco2 in aux:
+                Rij = [disco2.x - disco.x , disco2.y - disco.y]
+                dist = np.sqrt(Rij[0]**2 + Rij[1]**2)
+                if dist < disco.RADIUS + disco2.RADIUS:
+                    print("Error con: ")
+                    print(disco)
+                    print(disco2)
+                    return False
+        return True
+
+    def run(time, N, radius):
+        pelotitas = create_disks(N, radius)
+        if check_overlap(pelotitas):
+            sistema = System(time, pelotitas)
+            sistema.create_events(sistema.particles, [])
+            sistema.build_binary_heap()
+            sistema.main_loop()
+            i = 0
+            while i < len(sistema.lista_grande):
+                sistema.lista_grande[i] = tuple(sistema.lista_grande[i])
+                i += 1
+            anime = animator.Animator(sistema.lista_grande)
+            anime.setup_anime(10, 10, 25)
+            anime.run_anime(inval = 300, rep = False)
+        else:
+            return run(time, N, radius)
+
+    run(1000, 10, 0.5)
