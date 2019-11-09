@@ -19,13 +19,13 @@ class Event:
         self.time = np.inf
         self.disk_a = disk_a
         self.disk_b = disk_b
+        self.valid = False
         if disk_a != None and disk_b != None:
             self.TOTAL_COLLS = disk_a.disk_colls + disk_a.wall_colls + disk_b.disk_colls + disk_b.wall_colls
         elif disk_a == None and disk_b != None:
             self.TOTAL_COLLS = disk_b.disk_colls + disk_b.wall_colls
         else:
             self.TOTAL_COLLS = disk_a.disk_colls + disk_a.wall_colls
-        self.valid = False
 
     def calculate_time(self):
 
@@ -69,8 +69,8 @@ class Event:
                 self.time = np.inf
                 return self.time
 
-    def __lt__(self, ev):
-        return self.time < ev.time
+    def __lt__(self, other):
+        return self.time < other.time
 
     def __str__(self):
         strng = "Evento entre: "
@@ -96,16 +96,34 @@ class Event:
 
 
 if __name__ == "__main__":
-    ball = dk.Disk("pelotita", 5, 5, 10, 0, 1, 0.5, (255, 0 ,0))
-    ball2 = dk.Disk("pelotita 2", 10, 5, -5, 0, 1, 0.5, (0, 255, 0))
-    ball3 = dk.Disk("pelotita 3", 1, 3, 5, 2, 1, 0.5, (0, 0, 255))
+    ball = dk.Disk("pelotita", 5, 5, 2.314, 1.29, 1, 0.5, (255, 0 ,0))
+    ball2 = dk.Disk("pelotita 2", 1, 2, 0.8, -3.4, 1, 0.5, (255, 0, 0))
     list = []
     ev1 = Event(ball, ball2)
     ev2 = Event(None, ball)
+    ev3 = Event(ball, None)
+    ev4 = Event(None, ball2)
+    ev5 = Event(ball2, None)
     print(ev1.calculate_time())
     print(ev2.calculate_time())
-    heapq.heappush(list, ev1)
-    heapq.heappush(list, ev2)
-    print(list)
+    print(ev3.calculate_time())
+    print(ev4.calculate_time())
+    print(ev5.calculate_time())
+    list.append(ev1)
+    list.append(ev2)
+    list.append(ev3)
+    list.append(ev4)
+    list.append(ev5)
+    heapq.heapify(list)
+    # if ev1.time != np.inf:
+    #     heapq.heappush(list, ev1)
+    # if ev2.time != np.inf:
+    #     heapq.heappush(list, ev2)
+    # if ev3.time != np.inf:
+    #     heapq.heappush(list, ev3)
+    # if ev4.time != np.inf:
+    #     heapq.heappush(list, ev4)
+    # if ev5.time != np.inf:
+    #     heapq.heappush(list, ev5)
     for evento in list:
         print(evento)

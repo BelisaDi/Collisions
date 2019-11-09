@@ -45,29 +45,39 @@ class System:
             return self.create_events(list, list_pairs)
 
     def build_binary_heap(self):
-        print("CONSTRUCCIÓN INICIAL DEL BINARY HEAP: ")
-        for evento in self.events:
-            evn = ev.Event(evento[0], evento[1])
+        for pair in self.events:
+            evn = ev.Event(pair[0], pair[1])
             evn.calculate_time()
-            print("EVENTO ACTUAL: ")
-            print(evn)
             if evn.time != np.inf:
                 heapq.heappush(self.minpq, evn)
-            print("minpq: ")
-            for i in self.minpq:
-                print(i)
-        print("---------------------------------------")
 
     def valid(self, evn):
+        print("\n")
+        print("Vamos a revisar el evento...")
         if evn.disk_a != None and evn.disk_b != None:
+            print("Son dos discos!")
+            print("Colisiones reales: ", evn.disk_a.disk_colls + evn.disk_a.wall_colls + evn.disk_b.disk_colls + evn.disk_b.wall_colls)
             if evn.TOTAL_COLLS == evn.disk_a.disk_colls + evn.disk_a.wall_colls + evn.disk_b.disk_colls + evn.disk_b.wall_colls:
                 evn.valid = True
+                print("Es valido!")
+            else:
+                print("No es valido!")
         elif evn.disk_a == None and evn.disk_b != None:
+            print("Es un disco con un muro vertical!")
+            print("Colisiones reales: ", evn.disk_b.disk_colls + evn.disk_b.wall_colls)
             if evn.TOTAL_COLLS == evn.disk_b.disk_colls + evn.disk_b.wall_colls:
                 evn.valid = True
+                print("Es valido!")
+            else:
+                print("No es valido!")
         else:
+            print("Es un disco con un muro horizontal!")
+            print("Colisiones reales: ", evn.disk_a.disk_colls + evn.disk_a.wall_colls)
             if evn.TOTAL_COLLS == evn.disk_a.disk_colls + evn.disk_a.wall_colls:
                 evn.valid = True
+                print("Es valido!")
+            else:
+                print("No es valido!")
 
     def res_collision(self, evn):
         if evn.disk_a != None and evn.disk_b != None: #DISCO CON DISCO
@@ -96,84 +106,91 @@ class System:
 
     def new_colls(self, evn):
         if evn.disk_a != None and evn.disk_b != None:
-            aux = [x for x in self.particles if x != evn.disk_a]
-            for disco in aux:
-                event_new = ev.Event(evn.disk_a, disco)
-                event_new.calculate_time()
-                event_new.time += self.time_sim
-                if event_new.time != np.inf:
-                    heapq.heappush(self.minpq, event_new)
-            event_a_wall_1 = ev.Event(evn.disk_a, None)
-            event_a_wall_2 = ev.Event(None, evn.disk_a)
-            event_a_wall_1.calculate_time()
-            event_a_wall_1.time += self.time_sim
-            event_a_wall_2.calculate_time()
-            event_a_wall_2.time += self.time_sim
+            for disco in self.particles:
+                if disco != evn.disk_a and disco != evn.disk_b:
+                    ev1 = ev.Event(evn.disk_a, disco)
+                    ev1.calculate_time()
+                    ev1.time += self.time_sim
 
-            if event_a_wall_1.time != np.inf:
-                heapq.heappush(self.minpq, event_a_wall_1)
-            if event_a_wall_2.time != np.inf:
-                heapq.heappush(self.minpq, event_a_wall_2)
+                    ev2 = ev.Event(evn.disk_b, disco)
+                    ev2.calculate_time()
+                    ev2.time += self.time_sim
 
-            aux.remove(evn.disk_b)
-            aux.append(evn.disk_a)
-            for disco in aux:
-                event_new = ev.Event(evn.disk_b, disco)
-                event_new.calculate_time()
-                event_new.time += self.time_sim
-                if event_new.time != np.inf:
-                    heapq.heappush(self.minpq, event_new)
-            event_b_wall_1 = ev.Event(evn.disk_b, None)
-            event_b_wall_2 = ev.Event(None, evn.disk_b)
-            event_b_wall_1.calculate_time()
-            event_b_wall_1.time += self.time_sim
-            event_b_wall_2.calculate_time()
-            event_b_wall_2.time += self.time_sim
+                    if ev1.time != np.inf:
+                        heapq.heappush(self.minpq, ev1)
+                    if ev2.time != np.inf:
+                        heapq.heappush(self.minpq, ev2)
 
-            if event_b_wall_1.time != np.inf:
-                heapq.heappush(self.minpq, event_b_wall_1)
-            if event_b_wall_2.time != np.inf:
-                heapq.heappush(self.minpq, event_b_wall_2)
+            ev1_vert = ev.Event(None, evn.disk_a)
+            ev1_vert.calculate_time()
+            ev1_vert.time += self.time_sim
+
+            ev1_horz = ev.Event(evn.disk_a, None)
+            ev1_horz.calculate_time()
+            ev1_horz.time += self.time_sim
+
+            ev2_vert = ev.Event(None, evn.disk_b)
+            ev2_vert.calculate_time()
+            ev2_vert.time += self.time_sim
+
+            ev2_horz = ev.Event(evn.disk_b, None)
+            ev2_horz.calculate_time()
+            ev2_horz.time += self.time_sim
+
+            if ev1_vert.time != np.inf:
+                heapq.heappush(self.minpq, ev1_vert)
+            if ev1_horz.time != np.inf:
+                heapq.heappush(self.minpq, ev1_horz)
+            if ev2_vert.time != np.inf:
+                heapq.heappush(self.minpq, ev2_vert)
+            if ev2_horz.time != np.inf:
+                heapq.heappush(self.minpq, ev2_horz)
 
         elif evn.disk_a == None and evn.disk_b != None: #DISCO CON MURO VERTICAL
-             aux = [x for x in self.particles if x != evn.disk_b]
-             for disco in aux:
-                 event_new = ev.Event(evn.disk_b, disco)
-                 event_new.calculate_time()
-                 event_new.time += self.time_sim
-                 if event_new.time != np.inf:
-                     heapq.heappush(self.minpq, event_new)
-             event_b_wall_1 = ev.Event(evn.disk_b, None)
-             event_b_wall_2 = ev.Event(None, evn.disk_b)
-             event_b_wall_1.calculate_time()
-             event_b_wall_1.time += self.time_sim
-             event_b_wall_2.calculate_time()
-             event_b_wall_2.time += self.time_sim
+            for disco in self.particles:
+                if disco != evn.disk_b:
+                    ev1 = ev.Event(evn.disk_b, disco)
+                    ev1.calculate_time()
+                    ev1.time += self.time_sim
 
-             if event_b_wall_1.time != np.inf:
-                heapq.heappush(self.minpq, event_b_wall_1)
-             if event_b_wall_2.time != np.inf:
-                heapq.heappush(self.minpq, event_b_wall_2)
+                    if ev1.time != np.inf:
+                        heapq.heappush(self.minpq, ev1)
+
+            ev1_vert = ev.Event(None, evn.disk_b)
+            ev1_vert.calculate_time()
+            ev1_vert.time += self.time_sim
+
+            ev1_horz = ev.Event(evn.disk_b, None)
+            ev1_horz.calculate_time()
+            ev1_horz.time += self.time_sim
+
+            if ev1_vert.time != np.inf:
+                heapq.heappush(self.minpq, ev1_vert)
+            if ev1_horz.time != np.inf:
+                heapq.heappush(self.minpq, ev1_horz)
 
         else: #DISCO CON MURO HORIZONTAL
-            aux = [x for x in self.particles if x != evn.disk_a]
-            for disco in aux:
-                event_new = ev.Event(evn.disk_a, disco)
-                event_new.calculate_time()
-                event_new.time += self.time_sim
-                if event_new.time != np.inf:
-                    heapq.heappush(self.minpq, event_new)
-            event_a_wall_1 = ev.Event(evn.disk_a, None)
-            event_a_wall_2 = ev.Event(None, evn.disk_a)
-            event_a_wall_1.calculate_time()
-            event_a_wall_1.time += self.time_sim
-            event_a_wall_2.calculate_time()
-            event_a_wall_2.time += self.time_sim
+            for disco in self.particles:
+                if disco != evn.disk_a:
+                    ev1 = ev.Event(evn.disk_a, disco)
+                    ev1.calculate_time()
+                    ev1.time += self.time_sim
 
-            if event_a_wall_1.time != np.inf:
-                heapq.heappush(self.minpq, event_a_wall_1)
-            if event_a_wall_2.time != np.inf:
-                heapq.heappush(self.minpq, event_a_wall_2)
+                    if ev1.time != np.inf:
+                        heapq.heappush(self.minpq, ev1)
+
+            ev1_vert = ev.Event(None, evn.disk_a)
+            ev1_vert.calculate_time()
+            ev1_vert.time += self.time_sim
+
+            ev1_horz = ev.Event(evn.disk_a, None)
+            ev1_horz.calculate_time()
+            ev1_horz.time += self.time_sim
+
+            if ev1_vert.time != np.inf:
+                heapq.heappush(self.minpq, ev1_vert)
+            if ev1_horz.time != np.inf:
+                heapq.heappush(self.minpq, ev1_horz)
 
     def fill_list(self):
         i = 0
@@ -183,54 +200,67 @@ class System:
             self.lista_grande[i][1].append(y)
             i += 1
 
-    def main_loop_2(self):
-        val = True
+    def move_particles(self, deltat):
+        for disco in self.particles:
+            disco.move(deltat)
+
+    def main_loop(self):
+        run = True
         self.fill_list()
-        while(val):
+        while(run):
             if len(self.minpq) == 0:
-                val = False
+                break
             if self.time_sim >= self.TIME_MAX:
-                val = False
+                break
             print("BINARY HEAP: ")
             for evento in self.minpq:
                 print(evento)
+            print("\n")
             evn = heapq.heappop(self.minpq)
+            print("PRIMER EVENTO DE LA COLA: ")
+            print(evn)
             self.valid(evn)
+            print("\n")
             if evn.time > self.time_sim and evn.valid:
                 print("SUCEDIÓ ESTE EVENTO: ")
                 print("OJO, LA SIMULACIÓN VA EN: ", self.time_sim)
                 print(evn)
+                print("\n")
+
                 print("POSICIONES ANTES: ")
                 for disk in self.particles:
                     print(disk)
-                for disk in self.particles:
-                    disk.move(evn.time - self.time_sim)
-                self.time_sim += evn.time
+
+                self.move_particles(evn.time - self.time_sim)
+                print("MOVÍ LAS PARTICULAS UN DELTA DE: ", evn.time - self.time_sim, "\n")
+
+                self.time_sim = evn.time
                 self.res_collision(evn)
-                self.new_colls(evn)
-                self.fill_list()
+
                 print("POSICIONES DESPUÉS: ")
                 for disk in self.particles:
                     print(disk)
+                print("\n")
+
+                self.new_colls(evn)
+                self.fill_list()
+
+                print("AHORA LA SIMULACIÓN VA EN: ", self.time_sim)
                 print("----------------------------------------\n")
 
 
 if __name__ == "__main__":
-    ball = dk.Disk("pelotita", 5, 5, 2.314, 1.29, 1, 0.5, (255, 0 ,0))
-    ball_2 = dk.Disk("pelotita 2", 1, 2, 0.8, -3.4, 1, 0.5, (255, 0, 0))
-    sistema = System(20, [ball, ball_2])
+    ball = dk.Disk("pelotita", 5, 5, 0.125, 5.127, 1, 0.5, (255, 0 ,0))
+    ball2 = dk.Disk("pelotita 2", 1, 2, -2.406, -3.4549, 1, 0.5, (255, 0, 0))
+    ball3 = dk.Disk("pelotita 3", 7, 8, 2.6755, 3.6581, 1, 0.5, (255, 0, 0))
+    sistema = System(10, [ball, ball2, ball3])
     sistema.create_events(sistema.particles, [])
     sistema.build_binary_heap()
-    for i in sistema.minpq:
-        print(i)
-    # sistema.main_loop_2()
-    # i = 0
-    # while i < len(sistema.lista_grande):
-    #     sistema.lista_grande[i] = tuple(sistema.lista_grande[i])
-    #     i += 1
-    # for lista in sistema.lista_grande:
-    #     print(lista)
-    #     print("////////////////////////////////////////")
-    # anime = animator.Animator(sistema.lista_grande)
-    # anime.setup_anime()
-    # anime.run_anime(inval = 1000, rep = True)
+    sistema.main_loop()
+    i = 0
+    while i < len(sistema.lista_grande):
+        sistema.lista_grande[i] = tuple(sistema.lista_grande[i])
+        i += 1
+    anime = animator.Animator(sistema.lista_grande)
+    anime.setup_anime()
+    anime.run_anime(inval = 1000, rep = True)

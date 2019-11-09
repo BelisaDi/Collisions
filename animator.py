@@ -89,7 +89,6 @@ class Animator:
         ymin = 0
         xmax = 10
         ymax = 10
-        print("Xtremes:", xmin, xmax, ymin, ymax)
 
         self.fig = plt.figure()
         self.ax = plt.axes(xlim=(xmin, xmax), ylim=(ymin, ymax),
