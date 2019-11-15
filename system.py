@@ -45,6 +45,34 @@ class System:
                 list_pairs.append([i, None])
             return self.create_events(list, list_pairs)
 
+    def set_random_velocities(self):
+        for disco in self.particles:
+            disco.vx = random.uniform(-5, 5)
+            disco.vy = random.uniform(-5, 5)
+
+    def set_random_positions(self):
+        self.particles[0].x = LX/2
+        self.particles[0].y = LY/2
+
+        for idx, idish in enumerate(self.particles[1:], start = 1):
+            irad, overlap = idish.RADIUS, True
+
+            while overlap:
+                jdx, overlap = 0, False
+                dicex = (LX - 2.0 * irad) * np.random.random() + irad
+                dicey = (LY - 2.0 * irad) * np.random.random() + irad
+                tmp_pos = np.array([dicex, dicey])
+
+                while jdx < idx and not overlap:
+                    jdish = self.particles[jdx]
+                    otro = np.array([jdish.x, jdish.y])
+                    metric = np.linalg.norm(tmp_pos - otro)
+
+                    if metric <= irad + jdish.RADIUS:
+                        overlap = True
+                    jdx += 1
+                idish.x, idish.y = tmp_pos[0], tmp_pos[1]
+
     def build_binary_heap(self):
         for pair in self.events:
             evn = ev.Event(pair[0], pair[1])
@@ -214,6 +242,18 @@ class System:
 
 if __name__ == "__main__":
 
+    list = []
+    for i in range(10):
+        list.append(dk.Disk(str(i)))
+
+    sistema = System(10, list)
+    sistema.set_random_velocities()
+    sistema.set_random_positions()
+
+    for disco in sistema.particles:
+        print(disco)
+
+    #
     # def create_disks(n, sigma):
     #     list = []
     #     for i in range(n):
@@ -223,71 +263,40 @@ if __name__ == "__main__":
     #         vy = random.uniform(-5, 5)
     #         list.append(dk.Disk(str(i), x, y, vx, vy))
     #     return list
-
-    def check_overlap(list):
-        for disco in list:
-            aux = [x for x in list if x != disco]
-            for disco2 in aux:
-                Rij = [disco2.x - disco.x , disco2.y - disco.y]
-                dist = np.sqrt(Rij[0]**2 + Rij[1]**2)
-                if dist < disco.RADIUS + disco2.RADIUS:
-                    print("Error con: ")
-                    print(disco)
-                    print(disco2)
-                    return False
-        return True
+    #
+    # def check_overlap(list):
+    #     for disco in list:
+    #         aux = [x for x in list if x != disco]
+    #         for disco2 in aux:
+    #             Rij = [disco2.x - disco.x , disco2.y - disco.y]
+    #             dist = np.sqrt(Rij[0]**2 + Rij[1]**2)
+    #             if dist < disco.RADIUS + disco2.RADIUS:
+    #                 print("Error con: ")
+    #                 print(disco)
+    #                 print(disco2)
+    #                 return False
+    #     return True
 
     #Genera los discos y revisa que no se superpongan.
-    def generar_discos(n, radio):
-        print("Vamos a generar discos!")
-        list = []
-        i = 0
-        while i < n:
-            x = random.uniform(radio, LX - radio)
-            y = random.uniform(radio, LY - radio)
-            vx = random.uniform(-5, 5)
-            vy = random.uniform(-5, 5)
-            disco = dk.Disk(str(i), x, y, vx, vy, 1, radio)
-            print("Generé este disco: ")
-            print(disco)
-            if len(list) != 0:
-                for disco2 in list:
-                    print(disco2)
-                    Rij = [disco2.x - disco.x, disco2.y - disco.y]
-                    dist = np.sqrt(Rij[0]**2 + Rij[1]**2)
-                    print(dist)
-                    if dist < disco.RADIUS + disco2.RADIUS:
-                        print("Error con: ")
-                        print(disco2)
-                        break
-                print("Disco generado!")
-                list.append(disco)
-                i += 1
 
-            else:
-                print("No hay discos para comparar...")
-                list.append(disco)
-                i += 1
-        return list
-
-    def run(time, N, radius):
-        pelotitas = generar_discos(N, radius)
-        for i in pelotitas:
-            print(i)
-        if check_overlap(pelotitas):
-            print("Todo en orden!")
-        else:
-            print("Hay un error...")
-        sistema = System(time, pelotitas)
-        sistema.create_events(sistema.particles, [])
-        sistema.build_binary_heap()
-        sistema.main_loop()
-        i = 0
-        while i < len(sistema.lista_grande):
-            sistema.lista_grande[i] = tuple(sistema.lista_grande[i])
-            i += 1
-        anime = animator.Animator(sistema.lista_grande)
-        anime.setup_anime(10, 10, 25)
-        anime.run_anime(inval = 300, rep = False)
-
-    run(100, 10, 0.5)
+    # def run(time, N, radius):
+    #     pelotitas = generar_discos(N, radius)
+    #     for i in pelotitas:
+    #         print(i)
+    #     if check_overlap(pelotitas):
+    #         print("Todo en orden!")
+    #     else:
+    #         print("Hay un error...")
+    #     sistema = System(time, pelotitas)
+    #     sistema.create_events(sistema.particles, [])
+    #     sistema.build_binary_heap()
+    #     sistema.main_loop()
+    #     i = 0
+    #     while i < len(sistema.lista_grande):
+    #         sistema.lista_grande[i] = tuple(sistema.lista_grande[i])
+    #         i += 1
+    #     anime = animator.Animator(sistema.lista_grande)
+    #     anime.setup_anime(10, 10, 25)
+    #     anime.run_anime(inval = 300, rep = False)
+    #
+    # run(100, 10, 0.5)

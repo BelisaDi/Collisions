@@ -10,7 +10,8 @@ dimensions.
 
 With this tuple of tuples the class is capable of showing an animation
 of all of the artists in a frame set using matplotlib's pyplot. This
-class is very useful when animating physical systems such as planets,
+class is very usefulprint(ax.patches)
+    return patch, patch2 when animating physical systems such as planets,
 balls, charges, etc. Specially if you do not want to worry about little
 details like axes, titles, labels, etc.
 
@@ -25,6 +26,7 @@ Animator : Sets, runs or saves animations of a tuple of artists.
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib.patches import Ellipse
 
 
 class Animator:
@@ -90,20 +92,20 @@ class Animator:
         xmax = xmax_c
         ymax = ymax_c
 
-        self.fig = plt.figure()
-        self.ax = plt.axes(xlim=(xmin, xmax), ylim=(ymin, ymax),
-                           autoscale_on=False)
+        self.fig, self.ax = plt.subplots(subplot_kw={'aspect': 'equal'})
+        self.ax.set_xlim(0,xmax)
+        self.ax.set_ylim(0,ymax)
         self.ax.set_facecolor('k')
         self.ax.set(xlabel='x', ylabel='y',
-                    title='Intento 1')
+                    title='Intento 100')
         self.ax.set_aspect('equal')
         self.ax.grid()
 
         plt.gca().set_prop_cycle(None)
 
         for a in range(self.art_num):
-            pt, = self.ax.plot([], [], 'o', markersize = tam)
-            pt.set_clip_on(False)
+            pt, = self.ax.plot([], [], 'o', ms = 25)
+            print(pt)
             self.points.append(pt)
 
     def init_anime(self):
@@ -166,6 +168,7 @@ class Animator:
 
 if __name__ == "__main__":
     #anime = Animator((([5,9.5,5.92,0.5,9.5], [5,7.5,9.5,6.47,1.45]),))
+    x = Ellipse(xy = [1,1,], width = 2, height = 2)
     anime = Animator((([1],[1]),))
     anime.setup_anime(10, 10, 50)
     anime.run_anime(inval=1000, rep=False)

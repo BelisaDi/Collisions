@@ -4,7 +4,7 @@ class Disk:
     Clase que representa un disco impenetrable.
     """
 
-    def __init__(self, tag, x0, y0, v0x, v0y, mass = 1, radius = 0.5, color = (255,0,0)):
+    def __init__(self, tag, x0 = 0, y0 = 0, v0x = 0, v0y = 0, mass = 1, radius = 0.5, color = (255,0,0)):
         self.TAG = tag
         self.COLOR = color
         self.MASS = mass
