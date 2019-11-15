@@ -5,8 +5,8 @@ import animator
 import heapq
 import random
 
-LX = 10
-LY = 10
+LX = 100
+LY = 100
 
 class System:
 
@@ -25,6 +25,7 @@ class System:
         self.events = [] #lista con los eventos posibles
         self.particles = disks #Lista de discos
         self.lista_grande = []
+        self.momentos = []
         for disco in self.particles:
             self.lista_grande.append([[],[]])
 
@@ -44,6 +45,10 @@ class System:
                 list_pairs.append([None, i])
                 list_pairs.append([i, None])
             return self.create_events(list, list_pairs)
+
+    def initialize(self):
+        self.set_random_velocities()
+        self.set_random_positions()
 
     def set_random_velocities(self):
         for disco in self.particles:
@@ -223,9 +228,18 @@ class System:
         for disco in self.particles:
             disco.move(deltat)
 
+    def momentum(self):
+        Sum = 0
+        for disco in self.particles:
+            m = disco.MASS
+            v = np.sqrt(disco.vx**2 + disco.vy**2)
+            Sum += m*v
+        return Sum / len(self.particles)
+
     def main_loop(self):
         run = True
         self.fill_list()
+        self.momentos.append(self.momentum())
         while(run):
             if len(self.minpq) == 0:
                 break
@@ -239,6 +253,7 @@ class System:
                 self.res_collision(evn)
                 self.new_colls(evn)
                 self.fill_list()
+                self.momentos.append(self.momentum())
 
 if __name__ == "__main__":
 
@@ -247,56 +262,7 @@ if __name__ == "__main__":
         list.append(dk.Disk(str(i)))
 
     sistema = System(10, list)
-    sistema.set_random_velocities()
-    sistema.set_random_positions()
-
-    for disco in sistema.particles:
-        print(disco)
-
-    #
-    # def create_disks(n, sigma):
-    #     list = []
-    #     for i in range(n):
-    #         x = random.uniform(sigma, LX - sigma)
-    #         y = random.uniform(sigma, LY - sigma)
-    #         vx = random.uniform(-5, 5)
-    #         vy = random.uniform(-5, 5)
-    #         list.append(dk.Disk(str(i), x, y, vx, vy))
-    #     return list
-    #
-    # def check_overlap(list):
-    #     for disco in list:
-    #         aux = [x for x in list if x != disco]
-    #         for disco2 in aux:
-    #             Rij = [disco2.x - disco.x , disco2.y - disco.y]
-    #             dist = np.sqrt(Rij[0]**2 + Rij[1]**2)
-    #             if dist < disco.RADIUS + disco2.RADIUS:
-    #                 print("Error con: ")
-    #                 print(disco)
-    #                 print(disco2)
-    #                 return False
-    #     return True
-
-    #Genera los discos y revisa que no se superpongan.
-
-    # def run(time, N, radius):
-    #     pelotitas = generar_discos(N, radius)
-    #     for i in pelotitas:
-    #         print(i)
-    #     if check_overlap(pelotitas):
-    #         print("Todo en orden!")
-    #     else:
-    #         print("Hay un error...")
-    #     sistema = System(time, pelotitas)
-    #     sistema.create_events(sistema.particles, [])
-    #     sistema.build_binary_heap()
-    #     sistema.main_loop()
-    #     i = 0
-    #     while i < len(sistema.lista_grande):
-    #         sistema.lista_grande[i] = tuple(sistema.lista_grande[i])
-    #         i += 1
-    #     anime = animator.Animator(sistema.lista_grande)
-    #     anime.setup_anime(10, 10, 25)
-    #     anime.run_anime(inval = 300, rep = False)
-    #
-    # run(100, 10, 0.5)
+    sistema.initialize()
+    sistema.create_events(sistema.particles, [])
+    sistema.build_binary_heap()
+    sistema.main_loop()

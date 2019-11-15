@@ -2,38 +2,44 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
 
+
 fig = plt.figure()
 fig.set_dpi(100)
 fig.set_size_inches(7, 6.5)
 
 ax = plt.axes(xlim=(0, 10), ylim=(0, 10))
-patch = plt.Circle((5, -5), 0.75, fc='y')
-patch2 = plt.Circle((4,6), 0.75, fc = 'c')
+ax.set_facecolor('k')
+pos = ([ [1,2], [1,2] ],[ [1,2], [3,4] ])
+patches = []
+for i in range(len(pos)):
+    color = np.random.random(3)
+    color_t = tuple(color)
+    patches.append(plt.Circle((5,5), 0.75))
 
 def init():
-    patch.center = (5, 5)
-    patch2.center = (4,6)
-    ax.add_patch(patch)
-    ax.add_patch(patch2)
-    a = (patch, patch2)
+    for i in range(len(patches)):
+        x0 = pos[i][0][0]
+        y0 = pos[i][1][0]
+        patches[i].center = (x0, y0)
+        ax.add_patch(patches[i])
+    a = tuple(patches)
     return a
 
 def animate(i):
-    x, y = patch.center
-    x2, y2 = patch2.center
-    x = 5 + 3 * np.sin(np.radians(i))
-    y = 5 + 3 * np.cos(np.radians(i))
-    x2 = 1 + 3 * np.sin(np.radians(i))
-    y2 = 2 + 3 * np.cos(np.radians(i))
-    patch.center = (x,y)
-    patch2.center = (x2, y2)
-    a = (patch, patch2)
+    j = 0
+    for patch in patches:
+        x, y = patch.center
+        x = pos[j][0][i]
+        y = pos[j][1][i]
+        patch.center = (x,y)
+        j += 1
+    a = tuple(patches)
     return a
 
 anim = animation.FuncAnimation(fig, animate,
                                init_func=init,
-                               frames=360,
-                               interval=20,
+                               frames=len(pos[0][0]),
+                               interval=200,
                                blit=True)
-
+                               
 plt.show()
