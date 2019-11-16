@@ -1,12 +1,15 @@
 import disk as dk
 import event as ev
 import numpy as np
-import animator
 import heapq
 import random
 
-LX = 100
-LY = 100
+"""
+DEFINA EL TAMAÑO DEL CONTENEDOR.
+"""
+
+LX = 11
+LY = 11
 
 class System:
 
@@ -77,6 +80,27 @@ class System:
                         overlap = True
                     jdx += 1
                 idish.x, idish.y = tmp_pos[0], tmp_pos[1]
+
+    """
+    Para la red rectangular:
+    -n es el número de discos por fila, es decir, el número de columnas.
+    -m es el número de discos por columnas, es decir, el número de filas.
+    """
+
+    def set_rect_red(self, n, m):
+        step_x = LX/n
+        step_y = LY/m
+        center = (step_x/2, step_y/2)
+        if center[0] < self.particles[0].RADIUS or center[1] < self.particles[0].RADIUS:
+            print("No puedo hacer la malla! #Falta corregir este caso")
+            r
+        else:
+            k = 0
+            for i in range(n):
+                for j in range(m):
+                    self.particles[k].x = center[0] + ((i) * step_x)
+                    self.particles[k].y = center[1] + ((j) * step_y)
+                    k += 1
 
     def build_binary_heap(self):
         for pair in self.events:
@@ -258,11 +282,11 @@ class System:
 if __name__ == "__main__":
 
     list = []
-    for i in range(10):
-        list.append(dk.Disk(str(i)))
+    for i in range(30):
+        list.append(dk.Disk(str(i),  radius = 0.5))
 
     sistema = System(10, list)
-    sistema.initialize()
-    sistema.create_events(sistema.particles, [])
-    sistema.build_binary_heap()
-    sistema.main_loop()
+    sistema.set_random_velocities()
+    sistema.set_rect_red(5, 6)
+    for disco in sistema.particles:
+        print(disco)
