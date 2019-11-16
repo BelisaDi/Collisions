@@ -12,16 +12,12 @@ def run(time, n, radio):
 		list.append(dk.Disk(str(i), radius = radio))
 
 	sistema = sy.System(time, list)
-	sistema.set_random_velocities()
-
-    #La multiplicación de nxm debe dar el número de particulas.
-
-	sistema.set_rect_red(10,10)
+	sistema.initialize()
 	sistema.create_events(sistema.particles, [])
 	sistema.build_binary_heap()
 	sistema.main_loop()
 	tiempos = []
-	for i in range(len(sistema.momentos_x)):
+	for i in range(len(sistema.temperaturas)):
 		tiempos.append(i)
 	print (datetime.now() - startTime)
 
@@ -30,10 +26,10 @@ def run(time, n, radio):
 ##############################################
 
 	fig2, ax2 = plt.subplots()
-	ax2.plot(tiempos, sistema.momentos_x)
+	ax2.plot(tiempos, sistema.temperaturas, '-')
 
-	ax2.set(xlabel='Evento', ylabel='Momentum',
-	       title='Conservación de Momentum Lineal')
+	ax2.set(xlabel='Evento', ylabel='Temperatura (Por KB)',
+	       title='Conservación de la Temperatura')
 	ax2.grid()
 
 ################################################
@@ -79,4 +75,4 @@ def run(time, n, radio):
 	                               blit=True)
 	plt.show()
 
-run(10, 100, 0.3)
+run(100, 100, 1)

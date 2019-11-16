@@ -1,8 +1,7 @@
 import disk as dk
 import system as sy
-import event as ev
-import random
 import numpy as np
+import random
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from datetime import datetime
@@ -19,7 +18,7 @@ def run(time, n, radio):
 	sistema.build_binary_heap()
 	sistema.main_loop()
 	tiempos = []
-	for i in range(len(sistema.momentos)):
+	for i in range(len(sistema.momentos_x)):
 		tiempos.append(i)
 	print (datetime.now() - startTime)
 
@@ -28,9 +27,9 @@ def run(time, n, radio):
 ##############################################
 
 	fig2, ax2 = plt.subplots()
-	ax2.plot(tiempos, sistema.momentos, '-')
+	ax2.plot(tiempos, sistema.momentos_x, '-')
 
-	ax2.set(xlabel='Evento', ylabel='Momentum',
+	ax2.set(xlabel='Evento', ylabel='Momentum en X',
 	       title='Conservación de Momentum Lineal')
 	ax2.grid()
 
@@ -46,8 +45,8 @@ def run(time, n, radio):
 
 	patches = []
 	for i in range(len(pos)):
-	    color = np.random.random(3)
-	    color_t = tuple(color)
+        x, y, z = random.uniform(0, 1), random.uniform(0, 1), random.uniform(0.5, 1)
+	    color_t = (x,y,z)
 	    patches.append(plt.Circle((5,5), radio, color = color_t))
 
 	def init():
@@ -77,4 +76,4 @@ def run(time, n, radio):
 	                               blit=True)
 	plt.show()
 
-run(1000, 100, 1)
+run(100000, 10, 1)

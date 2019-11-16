@@ -8,8 +8,8 @@ import random
 DEFINA EL TAMAÑO DEL CONTENEDOR.
 """
 
-LX = 11
-LY = 11
+LX = 100
+LY = 100
 
 class System:
 
@@ -24,11 +24,13 @@ class System:
     def __init__(self, time, disks):
         self.TIME_MAX = time
         self.time_sim = 0
-        self.minpq = [] #heapq
-        self.events = [] #lista con los eventos posibles
-        self.particles = disks #Lista de discos
+        self.minpq = [] 
+        self.events = [] 
+        self.particles = disks 
         self.lista_grande = []
-        self.momentos = []
+        self.momentos_x = []
+        self.momentos_y = []
+        self.temperaturas = []
         for disco in self.particles:
             self.lista_grande.append([[],[]])
 
@@ -57,6 +59,28 @@ class System:
         for disco in self.particles:
             disco.vx = random.uniform(-5, 5)
             disco.vy = random.uniform(-5, 5)
+            
+    def set_velocities(self, in_kinetic):
+        vxSum = 0
+        vySum = 0
+        for disco in self.particles:
+            disco.vx = np.random.random() - 0.5
+            disco.vy = np.random.random() - 0.5
+            vxSum += disco.vx
+            vySum += disco.vy
+        vxCM = vxSum / len(self.particles)
+        vyCM = vySum / len(self.partciles)
+        for disco in self.particles:
+            disco.vx -= vxCM
+            disco.vy -= vyCM
+        v2Sum = 0
+        for disco in self.particles:
+            v2Sum += disco.vx**2 + disco.vy**2
+        k_energy_per_particle = (0.5) * v2Sum / len(self.particles)
+        rescale = np.sqrt(in_kinetic / k_energy_per_particle)
+        for disco in self.particles:
+            disco.vx *= rescale
+            disco.vy *= rescale
 
     def set_random_positions(self):
         self.particles[0].x = LX/2
@@ -93,7 +117,7 @@ class System:
         center = (step_x/2, step_y/2)
         if center[0] < self.particles[0].RADIUS or center[1] < self.particles[0].RADIUS:
             print("No puedo hacer la malla! #Falta corregir este caso")
-            r
+            return
         else:
             k = 0
             for i in range(n):
@@ -101,6 +125,8 @@ class System:
                     self.particles[k].x = center[0] + ((i) * step_x)
                     self.particles[k].y = center[1] + ((j) * step_y)
                     k += 1
+        for disco in self.particles:
+            print(disco)
 
     def build_binary_heap(self):
         for pair in self.events:
@@ -253,17 +279,39 @@ class System:
             disco.move(deltat)
 
     def momentum(self):
-        Sum = 0
+        Sum = np.array([0., 0.])
         for disco in self.particles:
             m = disco.MASS
-            v = np.sqrt(disco.vx**2 + disco.vy**2)
+            v = np.array([disco.vx, disco.vy])
             Sum += m*v
+        return Sum / len(self.particles)
+
+    def momentum_2part(self, evn):
+        if evn.disk_a != None and evn.disk_b != None:
+            va = np.array([evn.disk_a.vx, evn.disk_a.vy])
+            vb = np.array([evn.disk_b.vx, evn.disk_b.vy])
+            return (evn.disk_a.MASS * va + evn.disk_b.MASS * vb)
+        elif evn.disk_a == None and evn.disk_b != None:
+            vb = np.array([evn.disk_b.vx, evn.disk_b.vy])
+            return evn.disk_b.MASS * vb 
+        else:
+            va = np.array([evn.disk_a.vx, evn.disk_a.vy])
+            return evn.disk_a.MASS * va
+
+    def temperatura(self):
+        Sum = 0
+        for disco in self.particles:
+            v = disco.vx**2 + disco.vy**2
+            Sum += (disco.MASS/2)*v
         return Sum / len(self.particles)
 
     def main_loop(self):
         run = True
         self.fill_list()
-        self.momentos.append(self.momentum())
+        mtum = self.momentum()
+        self.momentos_x.append(mtum[0])
+        self.momentos_y.append(mtum[1])
+        self.temperaturas.append(self.temperatura())
         while(run):
             if len(self.minpq) == 0:
                 break
@@ -274,10 +322,26 @@ class System:
             if evn.time > self.time_sim and evn.valid:
                 self.move_particles(evn.time - self.time_sim)
                 self.time_sim = evn.time
+#                momentum_before = self.momentum_2part(evn)
                 self.res_collision(evn)
+#                momentum_after = self.momentum_2part(evn)
+#                if abs(momentum_after[0] - momentum_before[0]) > 1e-6 or abs(momentum_after[1] - momentum_before[1]) > 1e-6:
+#                    print(evn)
+#                    if evn.disk_a != None and evn.disk_b != None:
+#                        print(evn.disk_a)
+#                        print(evn.disk_b)
+#                    elif evn.disk_a == None and evn.disk_b != None:
+#                        print(evn.disk_b)
+#                    else:
+#                        print(evn.disk_a)
                 self.new_colls(evn)
                 self.fill_list()
-                self.momentos.append(self.momentum())
+                mtum = self.momentum()
+                self.momentos_x.append(mtum[0])
+                self.momentos_y.append(mtum[1])
+                temp = self.temperatura()
+                print(temp)
+                self.temperaturas.append(temp)
 
 if __name__ == "__main__":
 
