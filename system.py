@@ -32,6 +32,7 @@ class System:
         self.events = []
         self.particles = disks
         self.lista_grande = []
+        self.N = len(disks)
         for disco in self.particles:
             self.lista_grande.append([[],[]])
 
@@ -40,6 +41,11 @@ class System:
         self.temperaturas = []
         self.pressures = []
         self.cumulative_pressure = 0
+        self.free_time = []
+        self.free_time_val = 0
+        self.res_mean_vel_2 = []
+        self.l1 = 0
+        self.l2 = 0
 
 
     def create_events(self, list, list_pairs):
@@ -325,50 +331,60 @@ class System:
         rij = np.array([evn.disk_a.x - evn.disk_b.x , evn.disk_a.y - evn.disk_b.y])
         self.cumulative_pressure += (evn.disk_a.MASS/2) * np.dot(delta_v, rij)
 
+    def free_t(self):
+        sum = 0
+        for disco in self.particles:
+            sum += disco.wall_colls + disco.disk_colls
+        res = self.time_sim / sum
+        self.free_time.append(res)
+        #print(res)
+
+    def mean_vel_2(self):
+        sum = 0
+        for disco in self.particles:
+            v = np.array([disco.vx, disco.vy])
+            sum += np.dot(v,v)
+        res = sum / self.N
+        self.res_mean_vel_2.append(res)
+        print(res)
+
     def main_loop(self):
         run = True
-        #Llena la lista para las posiciones iniciales.
         self.fill_list()
-        #Calcula los momentos y temperatura iniciales.
         mtum = self.momentum()
         self.momentos_x.append(mtum[0])
         self.momentos_y.append(mtum[1])
         self.temperaturas.append(self.temperatura())
-        #Main loop
         while(run):
-            #Revisa condiciones para romper el ciclo.
             if len(self.minpq) == 0:
                 break
             if self.time_sim >= self.TIME_MAX:
                 break
-            #Recoge el primer evento en el binary heap.
             evn = heapq.heappop(self.minpq)
-            #Establece su validez.
             self.valid(evn)
-            #Si el evento es valido:
             if evn.time > self.time_sim and evn.valid:
-                #Mueve todas las partículas.
                 self.move_particles(evn.time - self.time_sim)
                 self.time_sim = evn.time
-                #Resuelve la colisión.
                 vel_before = evn.get_velocities()
                 self.res_collision(evn)
+                self.free_t()
+                self.mean_vel_2()
                 if evn.CLASS == 0:
                     self.cum_pre(evn, vel_before)
-                #Calcula nueva colisiones.
                 self.new_colls(evn)
-                #Llena las listas de posiciones para la animación.
                 self.fill_list()
-                #Calcula momento y temperatura.
+
                 mtum = self.momentum()
                 self.momentos_x.append(mtum[0])
                 self.momentos_y.append(mtum[1])
                 temp = self.temperatura()
-                #print(temp)
                 self.temperaturas.append(temp)
                 if evn.CLASS == 0:
                     p = (len(self.particles)*temp/(LX*LY)) + (self.cumulative_pressure/(LX*LY*self.time_sim))
                     self.pressures.append(p)
+        self.free_time_val = self.free_time[-1]
+        self.l1 = self.free_time_val * np.sqrt(sum(self.res_mean_vel_2) / self.time_sim)
+        self.l2 = self.free_time_val * np.sqrt(self.res_mean_vel_2[-1])
 
 if __name__ == "__main__":
 
