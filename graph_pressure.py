@@ -34,7 +34,4 @@ ax.set(xlabel='Número de partículas', ylabel='Presión',
        title='Relación entre presión y densidad')
 ax.grid()
 
-plt.legend()
 plt.show()
-
-print("hey")

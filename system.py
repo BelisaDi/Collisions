@@ -1,12 +1,12 @@
 import sys
 import heapq
 import random
-import numpy as np
+import numpy as np 
 sys.path.insert(0, "../")
 
 
-import disk as dk
-import event as ev
+import disk.disk as dk
+import event.event as ev
 
 """
 DEFINA EL TAMAÑO DEL CONTENEDOR.
@@ -46,7 +46,6 @@ class System:
         self.res_mean_vel_2 = []
         self.l1 = 0
         self.l2 = 0
-
 
     def create_events(self, list, list_pairs):
         if len(list) == 0:
@@ -346,31 +345,38 @@ class System:
             sum += np.dot(v,v)
         res = sum / self.N
         self.res_mean_vel_2.append(res)
-        print(res)
+        #print(res)
 
     def main_loop(self):
         run = True
         self.fill_list()
+
         mtum = self.momentum()
         self.momentos_x.append(mtum[0])
         self.momentos_y.append(mtum[1])
         self.temperaturas.append(self.temperatura())
+
         while(run):
+
             if len(self.minpq) == 0:
                 break
             if self.time_sim >= self.TIME_MAX:
                 break
+
             evn = heapq.heappop(self.minpq)
             self.valid(evn)
+
             if evn.time > self.time_sim and evn.valid:
                 self.move_particles(evn.time - self.time_sim)
                 self.time_sim = evn.time
                 vel_before = evn.get_velocities()
                 self.res_collision(evn)
                 self.free_t()
+
                 self.mean_vel_2()
                 if evn.CLASS == 0:
                     self.cum_pre(evn, vel_before)
+                    
                 self.new_colls(evn)
                 self.fill_list()
 
@@ -382,8 +388,9 @@ class System:
                 if evn.CLASS == 0:
                     p = (len(self.particles)*temp/(LX*LY)) + (self.cumulative_pressure/(LX*LY*self.time_sim))
                     self.pressures.append(p)
+
         self.free_time_val = self.free_time[-1]
-        self.l1 = self.free_time_val * np.sqrt(sum(self.res_mean_vel_2) / self.time_sim)
+        #self.l1 = self.free_time_val * np.sqrt(sum(self.res_mean_vel_2) / self.time_sim)
         self.l2 = self.free_time_val * np.sqrt(self.res_mean_vel_2[-1])
 
 if __name__ == "__main__":

@@ -1,20 +1,18 @@
 import sys
-import numpy as np
+import numpy as np 
 sys.path.insert(0, "../")
 
-import disk as dk
-import system as sy
+import disk.disk as dk
+import system.system as sy
 
 class Event:
 
     """
     Dado un par de discos (o un disco respecto al muro vertical y al muro horizontal) calcula el tiempo estimado
     en el que colisionan. La notación utilizada es la siguiente:
-
     disk_a, disk_b != None (Son dos discos)
     disk_a = None, disk_b != None (Disco con muro vertical)
     disk_a != None, disk_b = None (Disco con muro horizontal)
-
     """
 
     def __init__(self, disk_a, disk_b):
