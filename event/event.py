@@ -10,11 +10,9 @@ class Event:
     """
     Dado un par de discos (o un disco respecto al muro vertical y al muro horizontal) calcula el tiempo estimado
     en el que colisionan. La notación utilizada es la siguiente:
-
     disk_a, disk_b != None (Son dos discos)
     disk_a = None, disk_b != None (Disco con muro vertical)
     disk_a != None, disk_b = None (Disco con muro horizontal)
-
     """
 
     def __init__(self, disk_a, disk_b):
@@ -23,10 +21,13 @@ class Event:
         self.disk_b = disk_b
         self.valid = False
         if disk_a != None and disk_b != None:
+            self.CLASS = 0
             self.TOTAL_COLLS = disk_a.disk_colls + disk_a.wall_colls + disk_b.disk_colls + disk_b.wall_colls
         elif disk_a == None and disk_b != None:
+            self.CLASS = 1
             self.TOTAL_COLLS = disk_b.disk_colls + disk_b.wall_colls
         else:
+            self.CLASS = 2
             self.TOTAL_COLLS = disk_a.disk_colls + disk_a.wall_colls
 
     def calculate_time(self):
@@ -85,35 +86,11 @@ class Event:
         strng += ", con tiempo: " + str(self.time) + " y colisiones totales: " + str(self.TOTAL_COLLS)
         return strng
 
-if __name__ == "__main__":
-    ball = dk.Disk("pelotita", 5, 5, 2.314, 1.29, 1, 0.5, (255, 0 ,0))
-    ball2 = dk.Disk("pelotita 2", 1, 2, 0.8, -3.4, 1, 0.5, (255, 0, 0))
-    list = []
-    ev1 = Event(ball, ball2)
-    ev2 = Event(None, ball)
-    ev3 = Event(ball, None)
-    ev4 = Event(None, ball2)
-    ev5 = Event(ball2, None)
-    print(ev1.calculate_time())
-    print(ev2.calculate_time())
-    print(ev3.calculate_time())
-    print(ev4.calculate_time())
-    print(ev5.calculate_time())
-    list.append(ev1)
-    list.append(ev2)
-    list.append(ev3)
-    list.append(ev4)
-    list.append(ev5)
-    heapq.heapify(list)
-    # if ev1.time != np.inf:
-    #     heapq.heappush(list, ev1)
-    # if ev2.time != np.inf:
-    #     heapq.heappush(list, ev2)
-    # if ev3.time != np.inf:
-    #     heapq.heappush(list, ev3)
-    # if ev4.time != np.inf:
-    #     heapq.heappush(list, ev4)
-    # if ev5.time != np.inf:
-    #     heapq.heappush(list, ev5)
-    for evento in list:
-        print(evento)
+    def get_velocities(self):
+        if self.disk_a != None and self.disk_b != None:
+            return [[self.disk_a.vx, self.disk_a.vy], [self.disk_b.vx, self.disk_b.vy]]
+        elif self.disk_a == None and self.disk_b != None:
+            return [[None, None], [self.disk_b.vx, self.disk_b.vy]]
+        else:
+            return [[self.disk_a.vx, self.disk_a.vy], [None, None]]
+
