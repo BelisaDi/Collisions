@@ -1,9 +1,10 @@
 import sys
 import numpy as np 
-sys.path.insert(0, "../")
+sys.path.insert(0, 'C:\\Users\\Isabella\\Documents\\Elementos de Física\\Collisions\\disk')
+sys.path.insert(0, 'C:\\Users\\Isabella\\Documents\\Elementos de Física\\Collisions\\system')
 
-import disk.disk as dk
-import system.system as sy
+import disk as dk
+import system as sy
 
 class Event:
 

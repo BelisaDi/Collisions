@@ -4,10 +4,13 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from datetime import datetime 
-sys.path.insert(0, "../")
+sys.path.insert(
+	0, 'C:\\Users\\Isabella\\Documents\\Elementos de Física\\Collisions\\disk')
+sys.path.insert(
+	0, 'C:\\Users\\Isabella\\Documents\\Elementos de Física\\Collisions\\system')
 
-import disk.disk as dk
-import system.system as sy
+import disk as dk
+import system as sy
 
 def run(time, n, radio):
 	startTime = datetime.now()

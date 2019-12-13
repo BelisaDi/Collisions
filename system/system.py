@@ -2,11 +2,11 @@ import sys
 import heapq
 import random
 import numpy as np 
-sys.path.insert(0, "../")
+sys.path.insert(0, 'C:\\Users\\Isabella\\Documents\\Elementos de Física\\Collisions\\disk')
+sys.path.insert(0, 'C:\\Users\\Isabella\\Documents\\Elementos de Física\\Collisions\\event')
 
-
-import disk.disk as dk
-import event.event as ev
+import disk as dk
+import event as ev
 
 """
 DEFINA EL TAMAÑO DEL CONTENEDOR.
@@ -384,6 +384,7 @@ class System:
                 self.momentos_x.append(mtum[0])
                 self.momentos_y.append(mtum[1])
                 temp = self.temperatura()
+                print(temp)
                 self.temperaturas.append(temp)
                 if evn.CLASS == 0:
                     p = (len(self.particles)*temp/(LX*LY)) + (self.cumulative_pressure/(LX*LY*self.time_sim))
